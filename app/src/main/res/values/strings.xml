@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">MSG</string>
+    <string name="title_activity_history">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+
+    <string name="unkown">未知</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="refresh">Refresh</string>
+    <string name="back">Back</string>
+    <string name="str_pattern_01">按摩模式一</string>
+    <string name="str_default_time_15_min">15:00</string>
+    <string name="str_massager_has_off_line">按摩器掉线了...</string>
+    <string name="default_date_2015_1">2015/01</string>
+    <string name="str_time">时间</string>
+    <string name="str_pattern">模式</string>
+    <string name="str_power">力度</string>
+</resources>
