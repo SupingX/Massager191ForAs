@@ -1,5 +1,6 @@
 package com.laputa.massager191.service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,18 +14,22 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.util.Log;
 
 import com.laputa.massager191.base.BaseApp;
+import com.laputa.massager191.bean.History;
 import com.laputa.massager191.ble.blue.core.AbstractSimpleLaputaBlue;
 import com.laputa.massager191.ble.blue.core.Configration;
 import com.laputa.massager191.ble.blue.core.OnBlueChangedListener;
 import com.laputa.massager191.ble.blue.core.SimpleLaputaBlue;
 import com.laputa.massager191.ble.blue.util.BondedDeviceUtil;
+import com.laputa.massager191.db.DbUtil;
 import com.laputa.massager191.protocol.bean.MycjMassagerInfo;
 import com.laputa.massager191.protocol.core.MassagerProtocolNotifyManager;
 import com.laputa.massager191.protocol.core.MassagerProtocolWriteManager;
 import com.laputa.massager191.protocol.notify.OnProtocolNotifyListenerBasedapter;
 import com.laputa.massager191.protocol.util.DataUtil;
+import com.laputa.massager191.util.DateUtil;
 import com.laputa.massager191.util.LogY;
 
 
@@ -47,15 +52,17 @@ public class BlueService extends Service {
     }
 
     public void setPower(int power, int witch) {
+        MassagerProtocolWriteManager write = MassagerProtocolWriteManager.newInstance();
+        write(write.writeForChangePower(power, witch));
         if (witch == 0 && BaseApp.info1 != null) {
             BaseApp.info1.setPower(power);
+
         } else if (witch == 1 && BaseApp.info2 != null) {
             BaseApp.info2.setPower(power);
         } else if (witch == 2 && BaseApp.info3 != null) {
             BaseApp.info3.setPower(power);
         } else if (witch == 0xFF) {
             if (BaseApp.info1 != null) {
-
                 BaseApp.info1.setPower(power);
             }
             if (BaseApp.info2 != null) {
@@ -79,8 +86,8 @@ public class BlueService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        LogY.add(BlueService.class,true);
-        LogY.e(BlueService.class,"-- onCreate --");
+        LogY.add(BlueService.class, true);
+        LogY.e(BlueService.class, "-- onCreate --");
         acquireWakeLock();
         Configration c = new Configration();
         c.UUID_CHARACTERISTIC_NOTIFY = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
@@ -136,7 +143,7 @@ public class BlueService extends Service {
 
                     @Override
                     public void onServiceDiscovered(String address) {
-                        write(DataUtil.hexStringToByte("DA000000"));
+//                        write(DataUtil.hexStringToByte("DA000000"));
                     }
 
                     @Override
@@ -225,14 +232,13 @@ public class BlueService extends Service {
      */
     private void parseData(byte[] data) {
         if (manager == null) {
-            manager = new MassagerProtocolNotifyManager(this,
+            manager = new MassagerProtocolNotifyManager(getApplicationContext(),
                     new OnProtocolNotifyListenerBasedapter() {
 
                         @Override
                         public void onConfig(String desc, int count) {
                             super.onConfig(desc, count);
                             // TODO: 2016/9/12 出厂配置了几个按摩器.
-
                             i(desc);
                             BaseApp.count = count;
                         }
@@ -319,19 +325,80 @@ public class BlueService extends Service {
 
                         @Override
                         public void onParseMassagerInfo(String desc,
-                                                        MycjMassagerInfo info, int massager) {
+                                                        final MycjMassagerInfo info, int massager) {
                             super.onParseMassagerInfo(desc, info, massager);
+                            BaseApp.showInfo();
                             i(desc);
                             // TODO: 2016/9/12 按摩信息
-
                             if (massager == 0) {
+                                if (info.getOpen() == 0) {
+                                    if (BaseApp.info1 != null) {
+                                        final History history = new History();
+                                        history.setDate(DateUtil.dateToString(new Date(), "yyyyMMdd hh:mm:ss"));
+                                        history.setModel(BaseApp.info1.getPattern());
+                                        history.setPower(BaseApp.info1.getPower());
+
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (BaseApp.info1 != null) {
+                                                    DbUtil.getInstance(getApplicationContext()).save(history);
+                                                }
+                                            }
+                                        }).start();
+                                        BaseApp.info1 = null;
+                                    }
+                                }
                                 BaseApp.info1 = info;
                             } else if (massager == 1) {
+                                if (info.getOpen() == 0) {
+                                    if (BaseApp.info2 != null) {
+                                        final History history2 = new History();
+                                        history2.setDate(DateUtil.dateToString(new Date(), "yyyyMMdd hh:mm:ss"));
+                                        history2.setModel(BaseApp.info2.getPattern());
+                                        history2.setPower(BaseApp.info2.getPower());
+
+
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (BaseApp.info2 != null) {
+
+                                                    DbUtil.getInstance(getApplicationContext()).save(history2);
+
+                                                }
+                                            }
+                                        }).start();
+
+                                        BaseApp.info2 = null;
+                                    }
+                                }
                                 BaseApp.info2 = info;
+
                             } else if (massager == 2) {
+                                if (info.getOpen() == 0) {
+                                    if (BaseApp.info3 != null) {
+                                        final History history3 = new History();
+                                        history3.setDate(DateUtil.dateToString(new Date(), "yyyyMMdd hh:mm:ss"));
+                                        history3.setModel(BaseApp.info3.getPattern());
+                                        history3.setPower(BaseApp.info3.getPower());
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (BaseApp.info3 != null) {
+
+                                                    DbUtil.getInstance(getApplicationContext()).save(history3);
+
+                                                }
+                                            }
+                                        }).start();
+                                        BaseApp.info3 = null;
+                                    }
+                                }
                                 BaseApp.info3 = info;
                             }
                         }
+
 
                         @Override
                         public void onParseLoader(String desc, int loader, int massager) {
@@ -410,6 +477,9 @@ public class BlueService extends Service {
                                     BaseApp.info3.setPower(power);
                                 }
                             }
+
+
+                            BaseApp.showInfo();
                         }
 
                         @Override

@@ -43,6 +43,8 @@ public class MassagerProtocolNotifyManager extends BasicProtocolNotifyManager {
         String head = result.substring(0, 2);
         int size = data.length;
         try {
+//            D001240100CB0384000000000200000000000000
+//            D001240102C90384000000000100000000000000
             int headInt = Integer.valueOf(head, 16);
             // 改变模式
             if (headInt == Result.ChangePatternCallBack.getProtocl()
@@ -269,7 +271,7 @@ public class MassagerProtocolNotifyManager extends BasicProtocolNotifyManager {
 
         } catch (Exception e) {
             if (mOnProtocolNotifyListener != null) {
-                String desc = getDesc() + e.toString();
+                String desc = getDesc() + "onError()"+e.toString();
                 mOnProtocolNotifyListener.onError(desc);
             }
         }

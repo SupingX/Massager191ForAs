@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.laputa.massager191.protocol.bean.MycjMassagerInfo;
 
@@ -73,7 +74,7 @@ public class ProtocolBroadcastReceiver extends BroadcastReceiver {
             int witch = bundle.getInt(ProtocolBroadcast.EXTRA_MYCJ_WITCH);
 //			LogUtil.log("广播接受的info ：" + info.toString());
             MycjMassagerInfo data = setDefaultMassagerInfo(info,witch);
-            onChangeMassagerInfo(data);
+            onChangeMassagerInfo(data,witch);
         } else if (TextUtils.equals(action, ProtocolBroadcast.ACTION_MYCJ_ERROR)) {
 
         } else if (TextUtils.equals(action, ProtocolBroadcast.ACTION_MYCJ_OPEN_OR_CLOSE_CALL_BACK)) {
@@ -96,73 +97,91 @@ public class ProtocolBroadcastReceiver extends BroadcastReceiver {
             int time = bundle.getInt(ProtocolBroadcast.EXTRA_MYCJ_TIME);
             int timeSetting = bundle.getInt(ProtocolBroadcast.EXTRA_MYCJ_TIME_SETTING);
             onChangeTime(time, timeSetting,witch);
-        }else if (TextUtils.equals(action, ProtocolBroadcast.ACTION_MYCJ_TIME)) {
+        }else if (TextUtils.equals(action, ProtocolBroadcast.ACTION_MYCJ_CONFIG)) {
             int count = bundle.getInt(ProtocolBroadcast.EXTRA_MYCJ_CONFIG);
             onConfig(count);
+
         }
     }
 
+
+    // ^^^^^^^^^^^^^^^^^^^^^^^^ 子类重写 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!!!!!!!!!!@@@@@@@########$$$$%%%%%%^^^^^^^^^^^^^^^&&&&&&&&&&*************((((((((((())))))))))))_______+++
+    // [- -]zzZ
+    //
+
+    private static boolean isDebug = true;
+    private void e(String msg){
+        if (isDebug){
+            Log.e("ProtocolBR","------------------->"+msg+"<---------------------");
+        }
+    }
+
+
     protected void onConfig(int count) {
+        e("onConfig()       count : "+count );
     }
 
 
     protected void onChangeTime(int time, int timeSetting, int witch) {
-
+        e("onChangeTime()       timeSetting : "+timeSetting +",witch : "+ witch);
     }
 
 
     protected void onChangeTemperature(int temp, int tempUnit) {
-
+        e("onChangeTemperature()       temp : "+temp +",tempUnit : "+ tempUnit);
     }
 
 
     protected void onChangePower(int power, int witch) {
-
+        e("onChangePower()       power : "+power +",witch : "+ witch);
     }
 
-    protected void onChangePattern(int i, int pattern) {
+    protected void onChangePattern(int witch, int pattern) {
+        e("onChangePattern()       pattern : "+pattern +",witch : "+witch);
     }
 
     protected void onChangeOpenOrCloseCallBack(int status) {
-
+        e("onChangeOpenOrCloseCallBack()       status : "+status );
     }
 
-    protected void onChangeMassagerInfo(MycjMassagerInfo info) {
-
+    protected void onChangeMassagerInfo(MycjMassagerInfo info,int witch) {
+        e("onChangeMassagerInfo()       MycjMassagerInfo : "+info +",witch : "+witch);
     }
 
     protected void onChangeLoader(int loader, int witch) {
-
+        e("onChangeLoader()       loader : "+loader +",witch : "+witch);
     }
 
     protected void onChangeHeartRate(int heartRate) {
-
+        e("onChangeHeartRate()       heartRate : "+heartRate );
     }
 
     protected void onChangeFirmwareVersion(String version) {
-
+        e("onChangeFirmwareVersion()       version : "+version );
     }
 
     protected void onChangeFactoryResetCallBack(int status) {
-
+        e("onChangeFactoryResetCallBack()       status : "+status );
     }
 
     protected void onChangeElectricityCallBack(int totalElect, int leftElect) {
-
+        e("onChangeElectricityCallBack()       totalElect : "+totalElect +",leftElect : "+leftElect);
     }
 
     protected void onChangeTimeCallBack(int stauts, int time) {
-
+        e("onChangeTimeCallBack()       stauts : "+stauts +",time : "+time);
     }
 
     protected void onChangeTempeatureCallBack(int stauts, int temp, int tempUnit) {
-
+        e("onChangeTempeatureCallBack()       stauts : "+stauts +",temp : "+temp);
     }
 
     protected void onChangePowerCallBack(int stauts, int power, int witch) {
+        e("onChangePowerCallBack()       power : "+power +",witch : "+witch);
     }
 
     protected void onChangePatternCallBack(int stauts, int pattern, int witch) {
+        e("onChangePatternCallBack()       pattern : "+pattern +",witch : "+witch);
     }
 
 }

@@ -22,11 +22,24 @@
     <string name="confirm">Confirm</string>
     <string name="refresh">Refresh</string>
     <string name="back">Back</string>
-    <string name="str_pattern_01">按摩模式一</string>
+
     <string name="str_default_time_15_min">15:00</string>
     <string name="str_massager_has_off_line">按摩器掉线了...</string>
     <string name="default_date_2015_1">2015/01</string>
     <string name="str_time">时间</string>
     <string name="str_pattern">模式</string>
     <string name="str_power">力度</string>
+    <string name="str_pattern_00">未知</string>
+    <string name="str_pattern_01">按摩模式一</string>
+    <string name="str_pattern_02">按摩模式二</string>
+    <string name="str_pattern_03">按摩模式三</string>
+    <string name="str_pattern_04">按摩模式四</string>
+    <string name="str_pattern_05">按摩模式五</string>
+    <string name="str_pattern_06">按摩模式六</string>
+    <string name="str_pattern_07">按摩模式七</string>
+    <string name="str_pattern_08">按摩模式八</string>
+    <string name="str_pattern_09">按摩模式九</string>
+    <string name="str_pattern_10">按摩模式十</string>
+    <string name="str_pattern_11">按摩模式十一</string>
+    <string name="str_pattern_12">按摩模式十二</string>
 </resources>

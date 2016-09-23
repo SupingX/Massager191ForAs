@@ -1,5 +1,6 @@
 package com.laputa.massager191.activity;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.laputa.massager191.R;
 import com.laputa.massager191.adapter.HistoryAdapter;
+import com.laputa.massager191.base.BaseActivity;
 import com.laputa.massager191.bean.History;
 import com.laputa.massager191.db.DbUtil;
 import com.laputa.massager191.util.DateUtil;
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class HistoryActivity extends AppCompatActivity implements  View.OnClickListener {
+public class HistoryActivity extends BaseActivity implements  View.OnClickListener {
     private List<History> historys;
     private ListView lvHistory;
     private HistoryAdapter adapter;
@@ -29,7 +31,6 @@ public class HistoryActivity extends AppCompatActivity implements  View.OnClickL
     private AlphaImageView imgNext;
     private AlphaImageView imgBack;
     private AlphaImageView imgClear;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +43,10 @@ public class HistoryActivity extends AppCompatActivity implements  View.OnClickL
 
         lvHistory = (ListView) findViewById(R.id.lv_history);
 
-
-
         adapter = new HistoryAdapter(historys,this);
         lvHistory.setAdapter(adapter);
+
+        loadHistroy();
     }
     @Override
     public void onBackPressed() {
@@ -67,12 +68,14 @@ public class HistoryActivity extends AppCompatActivity implements  View.OnClickL
             case R.id.img_previous:
                 date = DateUtil.getDateOfDiffDay(date, -1);
                 updateDate(date);
-                new LoadHistoryAsyncTask().execute(date);
+//                new LoadHistoryAsyncTask().execute(date);
+                loadHistroy();
                 break;
             case R.id.img_next:
                 date = DateUtil.getDateOfDiffDay(date, 1);
                 updateDate(date);
-                new LoadHistoryAsyncTask().execute(date);
+//                new LoadHistoryAsyncTask().execute(date);
+                loadHistroy();
                 break;
             case R.id.img_clear:
 
@@ -118,13 +121,14 @@ public class HistoryActivity extends AppCompatActivity implements  View.OnClickL
         imgClear.setOnClickListener(this);
         imgBack.setOnClickListener(this);
         imgNext.setOnClickListener(this);
+
+
     }
 
     private void loadHistroy() {
 //		for (int i = 0; i < 100; i++) {
 //			historys.add(new History(DateUtil.dateToString(date, "yyyyMMdd hh:mm:ss"), i,new Random().nextInt(5)));
 //		}
-
         new LoadHistoryAsyncTask().execute(date);
     }
 
@@ -133,6 +137,7 @@ public class HistoryActivity extends AppCompatActivity implements  View.OnClickL
     }
 //    private LoadingDialog loadingDialog;
     private class LoadHistoryAsyncTask extends AsyncTask<Date, Void, List<History>> {
+    private ProgressDialog progressDialog;
 
 // 29 30   .
 
@@ -142,7 +147,8 @@ public class HistoryActivity extends AppCompatActivity implements  View.OnClickL
         /*    loadingDialog = new LoadingDialog(HistoryActivity.this).builder().setCancelable(false)
                     .setCanceledOnTouchOutside(false);
             loadingDialog.show();*/
-
+            progressDialog = getProgressDialog("查询中...");
+            
         }
 
         @Override
@@ -151,11 +157,8 @@ public class HistoryActivity extends AppCompatActivity implements  View.OnClickL
 //            List<History> list = LitPalManager.instance().getHistiryListByMonth(date);
             List<History> list =DbUtil.getInstance(getApplicationContext()).find(DateUtil.dateToString(date,"yyyyMMdd"));
             Log.e("laputa", "list :" + list);
-
-
-
             try {
-                Thread.sleep(1500);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -170,6 +173,9 @@ public class HistoryActivity extends AppCompatActivity implements  View.OnClickL
                 historys.addAll(result);
             }
             adapter.notifyDataSetChanged();
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+            }
             super.onPostExecute(result);
         }
     }

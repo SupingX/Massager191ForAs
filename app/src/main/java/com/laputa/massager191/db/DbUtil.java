@@ -34,12 +34,13 @@ public class DbUtil {
         db = helper.getWritableDatabase();
     }
 
-    public boolean add(History history) {
+    public boolean save(History history) {
         // TODO: 2016/9/14  add
      /*   String sql = "";
         db.execSQL("insert into book (name, author, pages, price) values(?, ?, ?, ?)",
                 new String[] { "The Da Vinci Code", "Dan Brown", "454", "16.96" });
         */
+        Log.e("DbUtil","*************** save() ***************");
         ContentValues values = new ContentValues();
         values.put(DbHelper.HISTORY_ADDRESS, history.getAddress());
         values.put(DbHelper.HISTORY_DATE, history.getDate());
@@ -129,7 +130,7 @@ public class DbUtil {
                         int power = i;
                         int pattern = i % 10;
                         History history = new History(date, power, pattern);
-                        add(history);
+                        save(history);
                         Thread.sleep(100);
                     }
                 }catch (Exception e){

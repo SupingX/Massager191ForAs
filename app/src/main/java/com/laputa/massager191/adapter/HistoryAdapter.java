@@ -109,8 +109,7 @@ public class HistoryAdapter extends BaseAdapter {
 		default:
 			break;
 		}
-		
-		vh.tvModel.setText(model);
+		vh.tvModel.setText("模式："+history.getModel());
 		return convertView;
 	}
 

@@ -22,7 +22,7 @@ public class BaseApp extends Application{
     }
     private static BlueService blueService ;
     public static int count = 2;
-    public static MycjMassagerInfo info1;
+    public static MycjMassagerInfo info1 = new MycjMassagerInfo(1,0x11,1,1,1,1,1,1,1);
     public static MycjMassagerInfo info2;
     public static MycjMassagerInfo info3;
 
@@ -62,6 +62,9 @@ public class BaseApp extends Application{
     }
 
 
-
-
+    public static void showInfo() {
+        Log.e("BaseApp","=============info1=============="+info1);
+        Log.e("BaseApp","=============info2=============="+info2);
+        Log.e("BaseApp","=============info3=============="+info3);
+    }
 }

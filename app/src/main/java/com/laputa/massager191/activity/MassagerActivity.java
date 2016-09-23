@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.laputa.massager191.R;
 import com.laputa.massager191.base.BaseActivity;
 import com.laputa.massager191.base.BaseApp;
+import com.laputa.massager191.bean.Pattern;
 import com.laputa.massager191.ble.blue.broadcast.LaputaBroadcast;
 import com.laputa.massager191.ble.blue.core.SimpleLaputaBlue;
 import com.laputa.massager191.ble.blue.util.BondedDeviceUtil;
@@ -33,6 +34,7 @@ import com.laputa.massager191.protocol.core.ProtocolBroadcast;
 import com.laputa.massager191.protocol.core.ProtocolBroadcastReceiver;
 import com.laputa.massager191.util.Constant;
 import com.laputa.massager191.util.LogY;
+import com.laputa.massager191.util.PatternUtil;
 import com.laputa.massager191.util.TimeUtil;
 import com.laputa.massager191.util.ToastUtil;
 import com.laputa.massager191.view.ColorCircleView;
@@ -220,9 +222,17 @@ public class MassagerActivity extends BaseActivity {
     /**
      * 加载底部tag
      */
-    private void initTab() {
-        frTab = (FrameLayout) findViewById(R.id.fr_tab);
-        llTab = new LinearLayout(this);
+    private void
+    initTab() {
+        Log.e("MassagerActivity", "======================================================= initTab() : " + massagerSize );
+        if(frTab==null){
+            frTab = (FrameLayout) findViewById(R.id.fr_tab);
+        }
+        frTab.removeAllViews();
+        if (llTab == null) {
+            llTab = new LinearLayout(this);
+        }
+        llTab.removeAllViews();
         llTab.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         llTab.setOrientation(LinearLayout.HORIZONTAL);
         llTab.setWeightSum(massagerSize);
@@ -239,17 +249,21 @@ public class MassagerActivity extends BaseActivity {
             tvTab.setText("按摩器-" + i);
             tvTab.setLayoutParams(params);
             llTab.addView(tvTab);
-            Log.e("", "--> " + tvTab.getId());
+            Log.e("MassagerActivity", "======================================================= " + (int)tvTab.getTag());
             tvTab.setClickable(true);
             tvTab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e("", "----> " + v.getId());
+                    Log.e("MassagerActivity", "======================================================= " + (int)v.getTag());
                     currentTab = (Integer) v.getTag();
                     updateTab(currentTab);
+                    updateUi(getCurrentMassagerInfo());
                 }
             });
         }
+
+        Log.e("MassagerActivity", "=======================个数================================ " + llTab.getChildCount());
+
         frTab.addView(llTab);
         updateTab(currentTab);
     }
@@ -400,11 +414,21 @@ public class MassagerActivity extends BaseActivity {
             ToastUtil.showCustomToast(this, "正在加载...");
             return;
         }
+
+      /*  if (null != info && info.getPattern() != pattern){
+           String name = getResources().getString(PatternUtil.getPatternName(info.getPattern()));
+            showAlertDialog("按摩器"+currentTab +"正在["+name+"]下工作!");
+            return;
+        }*/
+
         if (null != info && info.getOpen() == 1 && info.getPattern() == pattern) {
             // start = info.getOpen()==1?true:false;
             // load = info.getLoader()==1?true:false;
             // time = info.getLeftTime();
             // power = info.getPower();
+
+
+
             if (getBlueService() != null && getBlueService().ifAllConnected()) {
                 getBlueService().stopMassager(currentTab);
             }
@@ -420,6 +444,8 @@ public class MassagerActivity extends BaseActivity {
                 int hr = 0;
                 info = new MycjMassagerInfo(open, pattern, power, leftTime,
                         settingTime, temperature, tempUnit, loader, hr);
+                Log.e("MassagerActivity","------------------------------------> currentTab : " + currentTab
+                );
                 getBlueService().startMassager(info, currentTab);
             }
             startLoading();
@@ -516,10 +542,9 @@ public class MassagerActivity extends BaseActivity {
 
     };
     private ProtocolBroadcastReceiver receiverData = new ProtocolBroadcastReceiver() {
-
-
         @Override
-        protected void onChangeMassagerInfo(final MycjMassagerInfo info) {
+        protected void onChangeMassagerInfo(final MycjMassagerInfo info,int witch) {
+            super.onChangeMassagerInfo(info,witch);
             mHandler.post(new Runnable() {
 
                 @Override
@@ -544,6 +569,7 @@ public class MassagerActivity extends BaseActivity {
                 }
             });
         }
+
 
         @Override
         protected void onChangePowerCallBack(final int stauts, final int power, final int witch) {
@@ -603,8 +629,13 @@ public class MassagerActivity extends BaseActivity {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    currentTab = count;
-                    updateUi(getCurrentMassagerInfo());
+                    LogY.e(MassagerActivity.class,"_______________________________________________________________.....onConfig() ; " + count );
+                    massagerSize = count;
+
+                    initTab();
+
+//                    updateUi(getCurrentMassagerInfo());
+
                 }
             });
 
