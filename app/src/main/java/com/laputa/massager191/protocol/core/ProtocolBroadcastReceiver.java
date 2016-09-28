@@ -72,7 +72,6 @@ public class ProtocolBroadcastReceiver extends BroadcastReceiver {
         } else if (TextUtils.equals(action, ProtocolBroadcast.ACTION_MYCJ_MASSAGERINFO)) {
             MycjMassagerInfo info = bundle.getParcelable(ProtocolBroadcast.EXTRA_MYCJ_MASSAGERINFO);
             int witch = bundle.getInt(ProtocolBroadcast.EXTRA_MYCJ_WITCH);
-//			LogUtil.log("广播接受的info ：" + info.toString());
             MycjMassagerInfo data = setDefaultMassagerInfo(info,witch);
             onChangeMassagerInfo(data,witch);
         } else if (TextUtils.equals(action, ProtocolBroadcast.ACTION_MYCJ_ERROR)) {

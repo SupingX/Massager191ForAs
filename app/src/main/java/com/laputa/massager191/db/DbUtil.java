@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.laputa.massager191.bean.History;
-import com.laputa.massager191.util.DateUtil;
+import com.laputa.massager191.util.Laputa;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,7 +40,7 @@ public class DbUtil {
         db.execSQL("insert into book (name, author, pages, price) values(?, ?, ?, ?)",
                 new String[] { "The Da Vinci Code", "Dan Brown", "454", "16.96" });
         */
-        Log.e("DbUtil","*************** save() ***************");
+        Log.e("DbUtil","*************** save()!!!!!!!!!! ***************");
         ContentValues values = new ContentValues();
         values.put(DbHelper.HISTORY_ADDRESS, history.getAddress());
         values.put(DbHelper.HISTORY_DATE, history.getDate());
@@ -58,7 +58,7 @@ public class DbUtil {
                         + " where " + DbHelper.HISTORY_DATE + " like ?";
                 db.execSQL(sql, new String[]{date + "%"});
                 return true;
-            }
+            }else{}
         } catch (Exception e) {
 
         }
@@ -125,8 +125,8 @@ public class DbUtil {
                     for (int i = 100; i > 0; i--) {
                        Log.e("","i :" + i);
                         Calendar c = Calendar.getInstance();
-                        c.setTime( DateUtil.getDateOfDiffDay(new Date(),i));
-                        String date = DateUtil.dateToString(c.getTime(),"yyyyMMdd hh:mm:ss");
+                        c.setTime( Laputa.getDateOfDiffDay(new Date(),i));
+                        String date = Laputa.dateToString(c.getTime(),"yyyyMMdd hh:mm:ss");
                         int power = i;
                         int pattern = i % 10;
                         History history = new History(date, power, pattern);

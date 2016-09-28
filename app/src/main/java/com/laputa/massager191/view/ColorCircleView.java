@@ -26,7 +26,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.laputa.massager191.R;
-import com.laputa.massager191.util.DisplayUtil;
+import com.laputa.massager191.util.Laputa;
 
 
 public class ColorCircleView extends View {
@@ -144,7 +144,7 @@ public class ColorCircleView extends View {
 		// }
 
 		// 屏幕的参数
-		Point screenMetrics = DisplayUtil.getScreenMetrics(getContext());
+		Point screenMetrics = Laputa.getScreenMetrics(getContext());
 		int mWidth = screenMetrics.x * 4 / 5;
 		int mHeight = mWidth;
 		if (thumb != null) {

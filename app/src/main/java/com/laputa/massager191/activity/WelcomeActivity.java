@@ -13,7 +13,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
 
 import com.laputa.massager191.R;
-import com.laputa.massager191.util.DisplayUtil;
+import com.laputa.massager191.util.Laputa;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -44,7 +44,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void startAnimator() {
-        Point screenMetrics = DisplayUtil.getScreenMetrics(this);
+        Point screenMetrics = Laputa.getScreenMetrics(this);
         ObjectAnimator animator0 = ObjectAnimator.ofFloat(tvMassage, "translationY", screenMetrics.y, screenMetrics.y / 2);
         animator0.setDuration(1000);
         ObjectAnimator animator1 = ObjectAnimator.ofFloat(tvMassage, "alpha", 0f, 1.0f);

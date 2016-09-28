@@ -37,4 +37,34 @@ public class PatternUtil {
         return name;
     }
 
+    public static int getPatternImg(int code) {
+        int img =R.mipmap.ic_pattern_01;
+        if (code == Pattern.Pattern_01.code) {
+            img =R.mipmap.ic_pattern_01;
+        } else if(code == Pattern.Pattern_02.code){
+            img =R.mipmap.ic_pattern_02;
+        }else if(code == Pattern.Pattern_03.code){
+            img =R.mipmap.ic_pattern_03;
+        }else if(code == Pattern.Pattern_04.code){
+            img =R.mipmap.ic_pattern_04;
+        }else if(code == Pattern.Pattern_05.code){
+            img =R.mipmap.ic_pattern_05;
+        }else if(code == Pattern.Pattern_06.code){
+            img =R.mipmap.ic_pattern_06;
+        }else if(code == Pattern.Pattern_07.code){
+            img =R.mipmap.ic_pattern_07;
+        }else if(code == Pattern.Pattern_08.code){
+            img =R.mipmap.ic_pattern_08;
+        }else if(code == Pattern.Pattern_09.code){
+            img =R.mipmap.ic_pattern_09;
+        }else if(code == Pattern.Pattern_10.code){
+            img =R.mipmap.ic_pattern_10;
+        }else if(code == Pattern.Pattern_11.code){
+            img =R.mipmap.ic_pattern_11;
+        }else if(code == Pattern.Pattern_12.code){
+            img =R.mipmap.ic_pattern_12;
+        }
+        return img;
+    }
+
 }

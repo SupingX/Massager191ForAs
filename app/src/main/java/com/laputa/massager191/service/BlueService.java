@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.util.Log;
 
 import com.laputa.massager191.base.BaseApp;
 import com.laputa.massager191.bean.History;
@@ -23,14 +22,13 @@ import com.laputa.massager191.ble.blue.core.Configration;
 import com.laputa.massager191.ble.blue.core.OnBlueChangedListener;
 import com.laputa.massager191.ble.blue.core.SimpleLaputaBlue;
 import com.laputa.massager191.ble.blue.util.BondedDeviceUtil;
+import com.laputa.massager191.ble.blue.util.SharedPreferenceUtil;
 import com.laputa.massager191.db.DbUtil;
 import com.laputa.massager191.protocol.bean.MycjMassagerInfo;
 import com.laputa.massager191.protocol.core.MassagerProtocolNotifyManager;
 import com.laputa.massager191.protocol.core.MassagerProtocolWriteManager;
 import com.laputa.massager191.protocol.notify.OnProtocolNotifyListenerBasedapter;
-import com.laputa.massager191.protocol.util.DataUtil;
-import com.laputa.massager191.util.DateUtil;
-import com.laputa.massager191.util.LogY;
+import com.laputa.massager191.util.Laputa;
 
 
 public class BlueService extends Service {
@@ -86,8 +84,7 @@ public class BlueService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        LogY.add(BlueService.class, true);
-        LogY.e(BlueService.class, "-- onCreate --");
+        Laputa.e(BlueService.class, "-- onCreate --");
         acquireWakeLock();
         Configration c = new Configration();
         c.UUID_CHARACTERISTIC_NOTIFY = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
@@ -241,6 +238,9 @@ public class BlueService extends Service {
                             // TODO: 2016/9/12 出厂配置了几个按摩器.
                             i(desc);
                             BaseApp.count = count;
+
+                            // 存贮按摩器定制的个数 .
+                            SharedPreferenceUtil.put(getApplicationContext(), BaseApp.SHARE_COUNT, count);
                         }
 
                         @Override
@@ -265,6 +265,9 @@ public class BlueService extends Service {
                                     BaseApp.info3.setSettingTime(settingTime);
                                 }
                             }
+
+                            BaseApp.showInfo();
+
 
                         }
 
@@ -327,76 +330,89 @@ public class BlueService extends Service {
                         public void onParseMassagerInfo(String desc,
                                                         final MycjMassagerInfo info, int massager) {
                             super.onParseMassagerInfo(desc, info, massager);
-                            BaseApp.showInfo();
+
                             i(desc);
                             // TODO: 2016/9/12 按摩信息
+                            // 怎样才算停止？
+                            // 1。发来的按摩信息为open为0
+                            // 2。怎样才可以保存
+                            // 3。open为1，并且已经开始了。
                             if (massager == 0) {
                                 if (info.getOpen() == 0) {
-                                    if (BaseApp.info1 != null) {
-                                        final History history = new History();
-                                        history.setDate(DateUtil.dateToString(new Date(), "yyyyMMdd hh:mm:ss"));
-                                        history.setModel(BaseApp.info1.getPattern());
-                                        history.setPower(BaseApp.info1.getPower());
-
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (BaseApp.info1 != null) {
-                                                    DbUtil.getInstance(getApplicationContext()).save(history);
+                                    if (BaseApp.isInfo1Start) {
+//                                        Laputa.i("==========================按摩器1结束了==============================");
+                                     if (BaseApp.info1 != null) {
+//                                         Laputa.i("==========================按摩器不是空结束了==============================");
+                                            final History history1 = new History();
+                                            history1.setDate(Laputa.dateToString(new Date(), "yyyyMMdd hh:mm:ss"));
+                                            history1.setModel(BaseApp.info1.getPattern());
+                                            history1.setPower(BaseApp.info1.getPower());
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                        DbUtil.getInstance(getApplicationContext()).save(history1);
                                                 }
-                                            }
-                                        }).start();
-                                        BaseApp.info1 = null;
+                                            }).start();
+                                        }
                                     }
+//                                    Laputa.i("==========================按摩器清空了==============================");
+                                    BaseApp.info1 = null;
+                                    BaseApp.isInfo1Start = false;
+                                } else {
+                                    BaseApp.isInfo1Start = true;
+                                    BaseApp.info1 = info;
                                 }
-                                BaseApp.info1 = info;
                             } else if (massager == 1) {
                                 if (info.getOpen() == 0) {
-                                    if (BaseApp.info2 != null) {
-                                        final History history2 = new History();
-                                        history2.setDate(DateUtil.dateToString(new Date(), "yyyyMMdd hh:mm:ss"));
-                                        history2.setModel(BaseApp.info2.getPattern());
-                                        history2.setPower(BaseApp.info2.getPower());
+                                    if (BaseApp.isInfo2Start) {
+                                     if (BaseApp.info2 != null) {
 
+                                            final History history2 = new History();
+                                            history2.setDate(Laputa.dateToString(new Date(), "yyyyMMdd hh:mm:ss"));
+                                            history2.setModel(BaseApp.info2.getPattern());
+                                            history2.setPower(BaseApp.info2.getPower());
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run() {
 
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (BaseApp.info2 != null) {
-
-                                                    DbUtil.getInstance(getApplicationContext()).save(history2);
+                                                        DbUtil.getInstance(getApplicationContext()).save(history2);
 
                                                 }
-                                            }
-                                        }).start();
+                                            }).start();
+                                        }
 
-                                        BaseApp.info2 = null;
                                     }
+                                    BaseApp.info2 = null;
+                                    BaseApp.isInfo2Start = false;
+                                } else {
+                                    BaseApp.isInfo2Start = true;
+                                    BaseApp.info2 = info;
                                 }
-                                BaseApp.info2 = info;
-
                             } else if (massager == 2) {
                                 if (info.getOpen() == 0) {
-                                    if (BaseApp.info3 != null) {
-                                        final History history3 = new History();
-                                        history3.setDate(DateUtil.dateToString(new Date(), "yyyyMMdd hh:mm:ss"));
-                                        history3.setModel(BaseApp.info3.getPattern());
-                                        history3.setPower(BaseApp.info3.getPower());
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (BaseApp.info3 != null) {
-
-                                                    DbUtil.getInstance(getApplicationContext()).save(history3);
-
+                                    if (BaseApp.isInfo3Start) {
+                                     if (BaseApp.info3 != null) {
+                                            final History history3 = new History();
+                                            history3.setDate(Laputa.dateToString(new Date(), "yyyyMMdd hh:mm:ss"));
+                                            history3.setModel(BaseApp.info3.getPattern());
+                                            history3.setPower(BaseApp.info3.getPower());
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                        DbUtil.getInstance(getApplicationContext()).save(history3);
                                                 }
-                                            }
-                                        }).start();
-                                        BaseApp.info3 = null;
+                                            }).start();
+                                        }
                                     }
+                                    BaseApp.isInfo3Start = false;
+                                    BaseApp.info3 = null;
+                                } else {
+                                    BaseApp.isInfo3Start = true;
+                                    BaseApp.info3 = info;
                                 }
-                                BaseApp.info3 = info;
                             }
+
+                            BaseApp.showInfo();
                         }
 
 
@@ -444,6 +460,8 @@ public class BlueService extends Service {
                                     BaseApp.info3.setLeftTime(settingTime);
                                 }
                             }
+
+
                         }
 
                         @Override
@@ -552,11 +570,11 @@ public class BlueService extends Service {
     private boolean isDebug = true;
 
     private void e(String msg) {
-        LogY.e(isDebug, "BlueService", msg);
+        Laputa.e("BlueService", msg);
     }
 
     private void i(String msg) {
-        LogY.i(isDebug, "BlueService", msg);
+        Laputa.i("BlueService", msg);
     }
 
 }

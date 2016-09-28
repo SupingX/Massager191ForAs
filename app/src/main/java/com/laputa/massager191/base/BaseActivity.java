@@ -1,9 +1,11 @@
 package com.laputa.massager191.base;
 
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
 
 import com.laputa.massager191.R;
 import com.laputa.massager191.dialog.AbstractLaputaDialog;
@@ -44,14 +46,14 @@ public class BaseActivity  extends AppCompatActivity {
 //        dialog.setTitle("提示");
         // dismiss监听
 
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+       /* dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
             @Override
             public void onDismiss(DialogInterface dialog) {
                 // TODO Auto-generated method stub
 
             }
-        });
+        });*/
 
         // 监听Key事件被传递给dialog
 //        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -101,6 +103,22 @@ public class BaseActivity  extends AppCompatActivity {
 //                    }
 //                });
         dialog.setMessage(msg);
+        dialog.show();
+        return dialog;
+    }
+
+    protected AlertDialog alert(String title, String msg, DialogInterface.OnClickListener l){
+        AlertDialog.Builder b = new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(msg)
+                .setPositiveButton("确定", l)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog dialog = b.create();
         dialog.show();
         return dialog;
     }

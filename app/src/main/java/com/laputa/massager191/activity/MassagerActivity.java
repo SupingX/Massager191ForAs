@@ -3,23 +3,28 @@ package com.laputa.massager191.activity;
 import android.animation.ObjectAnimator;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.laputa.massager191.R;
@@ -33,9 +38,8 @@ import com.laputa.massager191.protocol.bean.MycjMassagerInfo;
 import com.laputa.massager191.protocol.core.ProtocolBroadcast;
 import com.laputa.massager191.protocol.core.ProtocolBroadcastReceiver;
 import com.laputa.massager191.util.Constant;
-import com.laputa.massager191.util.LogY;
+import com.laputa.massager191.util.Laputa;
 import com.laputa.massager191.util.PatternUtil;
-import com.laputa.massager191.util.TimeUtil;
 import com.laputa.massager191.util.ToastUtil;
 import com.laputa.massager191.view.ColorCircleView;
 import com.laputa.massager191.adapter.DeviceAdapter;
@@ -48,7 +52,6 @@ import java.util.List;
  *
  */
 public class MassagerActivity extends BaseActivity {
-   static{ LogY.add(MassagerActivity.class,true);}
     private DeviceDialog chooseBlueADialog;
     private List<BluetoothDevice> devices;
     private DeviceAdapter adapter;
@@ -62,7 +65,11 @@ public class MassagerActivity extends BaseActivity {
      * 取值范围{}0 ,1, 2}
      **/
     private int currentTab = 0;
-
+    private ImageView ivMassagerInfoRed;
+    private ImageView ivMassagerInfoGreen;
+    private ImageView ivMassagerInfoBlue;
+    private boolean  isChanging = false;
+    private int oldOattern;
 
    /*
     // 沉浸式状态栏
@@ -81,7 +88,7 @@ public class MassagerActivity extends BaseActivity {
         }
     }*/
 
-    private void chen() {
+    private void chenjinshi() {
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             int option = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -101,27 +108,74 @@ public class MassagerActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_massager);
-        chen();
+        chenjinshi();
         massagerSize = BaseApp.count;
         devices = new ArrayList<BluetoothDevice>();
         adapter = new DeviceAdapter(devices, this);
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (null != bundle) {
-            pattern = bundle.getInt("pattern");
+            oldOattern = bundle.getInt("pattern");
+            pattern = oldOattern;
         }
         initViews();
         // 更新uI
 //		updateUi(blueService != null ? blueService.getMassagerInfo() : null);
+        updateCurrentTabFirst();
         updateUi(getCurrentMassagerInfo());
+//        updateTopLighting();
+
         updateBleStatus(getBlueService() != null && getBlueService().ifAllConnected());
         registerReceiver();
+    }
+
+    private void updateTopLighting() {
+        //  currentTab 优先显示0 > 1 > 2
+        if ((BaseApp.info3 != null && BaseApp.info3.getOpen() == 1 && BaseApp.info3.getPattern() == pattern)) {
+            ivMassagerInfoBlue.setBackgroundResource(R.drawable.bg_tab_massager_blue);
+        }else{
+            ivMassagerInfoBlue.setBackgroundResource(R.drawable.bg_tab_massager_black);
+        }
+
+        if ((BaseApp.info2 != null && BaseApp.info2.getOpen() == 1 && BaseApp.info2.getPattern() == pattern)) {
+            ivMassagerInfoGreen.setBackgroundResource(R.drawable.bg_tab_massager_green);
+        }else{
+            ivMassagerInfoGreen.setBackgroundResource(R.drawable.bg_tab_massager_black);
+        }
+
+        if ((BaseApp.info1 != null && BaseApp.info1.getOpen() == 1 && BaseApp.info1.getPattern() == pattern)) {
+            ivMassagerInfoRed.setBackgroundResource(R.drawable.bg_tab_massager_red);
+        }else{
+            ivMassagerInfoRed.setBackgroundResource(R.drawable.bg_tab_massager_black);
+        }
+    }
+    //都说有情人终成眷属，但总觉得有些人天生应该在一起，不知道为什么，却没能走到一起。例如郑少秋和赵雅芝、黄日华和翁美玲、毛宁和杨钰莹、苏有朋和赵薇、胡歌和杨幂、莱昂纳多和凯特、周杰伦和蔡依林、周星驰和朱茵、我和范冰冰……
+
+    private void updateCurrentTabFirst() {
+
+//        pattern = getCurrentPattern(); // 更新当前的pattern
+        //  currentTab 优先显示0 > 1 > 2
+        if ((BaseApp.info1 != null && BaseApp.info1.getOpen() == 1 && BaseApp.info1.getPattern() == pattern)) {
+
+            updateTab(currentTab =0);
+//            Laputa.i("=================================Red======================================");
+            return;
+        }
+        if ((BaseApp.info2 != null && BaseApp.info2.getOpen() == 1 && BaseApp.info2.getPattern() == pattern)) {
+//            Laputa.i("=================================绿======================================");
+            updateTab(currentTab =1);
+            return;
+        }
+        if ((BaseApp.info3 != null && BaseApp.info3.getOpen() == 1 && BaseApp.info3.getPattern() == pattern)) {
+//            Laputa.i("=================================蓝======================================");
+            updateTab(currentTab =2);
+            return;
+        }
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
     }
 
     @Override
@@ -135,11 +189,11 @@ public class MassagerActivity extends BaseActivity {
     }
 
     private void updateUi(MycjMassagerInfo info) {
-        updateTitle("按摩模式 : " + pattern);
+        updateTitle(getResources().getString( PatternUtil.getPatternName(pattern)));
         boolean start = false;
         boolean load = false;
         int time = 0;
-        int power = 0;
+        int power = 1;
 
         if (null != info && info.getOpen() == 1 && info.getPattern() == pattern) {
             start = info.getOpen() == 1;
@@ -155,10 +209,11 @@ public class MassagerActivity extends BaseActivity {
         }
 
         updateStartOrStop(start);
+        updateTopLighting();
         updateFuzai(load);
         updateTime(time);
         updatePower(power);
-        updateTab(currentTab);
+//        updateTab(currentTab);
     }
 
     private MycjMassagerInfo getCurrentMassagerInfo() {
@@ -174,20 +229,22 @@ public class MassagerActivity extends BaseActivity {
     }
 
     private void updatePower(int power) {
-        ccPower.setProgress(power - 1);
+        if (!isChanging){
+            ccPower.setProgress(power-1);
+        }
     }
 
     private void updateTime(int time) {
-        tvTime.setText(TimeUtil.getStringTime(time));
+        String mmss = Laputa.getMMSS(time * 1000);
+        tvTime.setText(mmss);
+//        tvTime.setText(TimeUtil.getStringTime(time));
     }
 
     private void updateBleStatus(boolean connect) {
         if (connect) {
-//            tvBleStatus.setText("连接成功");
             tvTitle.setTextColor(Color.WHITE);
             ivBleStatus.setImageResource(R.mipmap.ic_ble_icon_1);
         } else {
-//            tvBleStatus.setText("按摩器掉线了...");
             tvTitle.setTextColor(Color.parseColor("#B8B8B8"));
             ivBleStatus.setImageResource(R.mipmap.ic_ble_icon_1_miss);
         }
@@ -211,9 +268,17 @@ public class MassagerActivity extends BaseActivity {
         for (int i = 0; i < llTab.getChildCount(); i++) {
             View child = llTab.getChildAt(i);
             if ((Integer) child.getTag() == currentTab) {
-                child.setBackgroundResource(R.drawable.bg_ble_selected_cornon);
-            } else {
+             /*   if (currentTab == 0){
+                    child.setBackgroundResource(R.drawable.bg_tab_massager_red);
+                }else if(currentTab == 1){
+                    child.setBackgroundResource(R.drawable.bg_tab_massager_green);
+                }else if(currentTab == 2){
+                    child.setBackgroundResource(R.drawable.bg_tab_massager_blue);
+                }*/
+
                 child.setBackgroundResource(R.drawable.selector_ble);
+            } else {
+                child.setBackgroundResource(R.drawable.bg_tab_unselected);
             }
         }
 
@@ -222,10 +287,11 @@ public class MassagerActivity extends BaseActivity {
     /**
      * 加载底部tag
      */
-    private void
-    initTab() {
-        Log.e("MassagerActivity", "======================================================= initTab() : " + massagerSize );
-        if(frTab==null){
+    private void initTab() {
+
+        Laputa.e("MassagerActivity", "======================================================= initTab() : " + massagerSize);
+
+        if (frTab == null) {
             frTab = (FrameLayout) findViewById(R.id.fr_tab);
         }
         frTab.removeAllViews();
@@ -239,48 +305,66 @@ public class MassagerActivity extends BaseActivity {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         params.weight = 1;
         params.gravity = Gravity.CENTER;
+        params.setMargins(20, 20, 20, 20);
         for (int i = 0; i < massagerSize; i++) {
             TextView tvTab = new TextView(this);
             tvTab.setTag(i);
             tvTab.setGravity(Gravity.CENTER);
-            tvTab.setPadding(20, 20, 20, 20);
+
+//            tvTab.setPadding(20, 20, 20, 20);
             tvTab.setTextColor(Color.WHITE);
             tvTab.setBackgroundResource(R.drawable.selector_ble);
             tvTab.setText("按摩器-" + i);
             tvTab.setLayoutParams(params);
             llTab.addView(tvTab);
-            Log.e("MassagerActivity", "======================================================= " + (int)tvTab.getTag());
+            Laputa.e("MassagerActivity", "======================================================= " + (int) tvTab.getTag());
             tvTab.setClickable(true);
             tvTab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e("MassagerActivity", "======================================================= " + (int)v.getTag());
+                    Laputa.e("MassagerActivity", "===========================currentTab============================ " + (int) v.getTag());
                     currentTab = (Integer) v.getTag();
                     updateTab(currentTab);
+//                    pattern = getCurrentPattern();
+                    Laputa.e("MassagerActivity", "=========================pattern============================== " + pattern);
                     updateUi(getCurrentMassagerInfo());
                 }
             });
         }
 
-        Log.e("MassagerActivity", "=======================个数================================ " + llTab.getChildCount());
-
+        Laputa.e("MassagerActivity", "=======================个数================================ " + llTab.getChildCount());
         frTab.addView(llTab);
         updateTab(currentTab);
     }
 
+    private int getCurrentPattern(){
+        if ( currentTab == 0) {
+            return BaseApp.info1 != null?BaseApp.info1.getPattern():oldOattern;
+        }
+        else if ( currentTab == 1) {
+            return BaseApp.info2 != null?BaseApp.info2.getPattern():oldOattern;
+        }
+        else if ( currentTab == 2) {
+            return BaseApp.info3 != null?BaseApp.info3.getPattern():oldOattern;
+        }
+        return pattern;
+    }
+
+
     private void initViews() {
         initTab();
         tvTitle = (TextView) findViewById(R.id.tv_title);
+        ivMassagerInfoRed = (ImageView) findViewById(R.id.tv_massager_info_red);
+        ivMassagerInfoGreen = (ImageView) findViewById(R.id.tv_massager_info_green);
+        ivMassagerInfoBlue = (ImageView) findViewById(R.id.tv_massager_info_blue);
         ivBack = (ImageView) findViewById(R.id.iv_back);
         ivHistory = (ImageView) findViewById(R.id.iv_history);
         ccPower = (ColorCircleView) findViewById(R.id.cc_massager_power);
         ivFuzai = (ImageView) findViewById(R.id.iv_massager_fuzai);
         ivStartOrStop = (ImageView) findViewById(R.id.iv_massager_start_or_stop);
         tvTime = (TextView) findViewById(R.id.tv_massage_time);
-//        llBleStatus = (LinearLayout) findViewById(R.id.ll_ble_status);
         ivBleStatus = (ImageView) findViewById(R.id.iv_ble);
         ivLoading = (ImageView) findViewById(R.id.iv_loading);
-//        tvBleStatus = (TextView) findViewById(R.id.tv_ble_status);
         // 设置监听
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
@@ -290,51 +374,30 @@ public class MassagerActivity extends BaseActivity {
                         finish();
                         break;
                     case R.id.iv_history:
-//                        mHandler.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-                                startActivity(new Intent(MassagerActivity.this,
-                                        HistoryActivity.class));
-                                overridePendingTransition(R.anim.massager_out, R.anim.history_in);
-//                            }
-//                        });
-
-
-//                        new TestThread(getApplicationContext()).start();
+                        startActivity(new Intent(MassagerActivity.this,
+                                HistoryActivity.class));
+                        overridePendingTransition(R.anim.massager_out, R.anim.history_in);
                         break;
                     case R.id.iv_massager_start_or_stop:
                         doStartOrStop(getCurrentMassagerInfo());
                         // TODO: 2016/9/13 开始or结束按摩
                         break;
-                 /*   case R.id.ll_ble_status:
-                    */
                     case R.id.tv_title:
                         if (SimpleLaputaBlue.isEnable(MassagerActivity.this)) {
                             showBleDeviceDialog();
                         } else {
-                            AlertDialog.Builder b = new AlertDialog.Builder(MassagerActivity.this)
-                                    .setTitle("提示")
-                                    .setMessage("蓝牙不可用,是否打开蓝牙!")
-                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            intent.setAction(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                                            startActivity(intent);
-                                        }
-                                    })
-                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            AlertDialog dialog = b.create();
-                            dialog.show();
+                            alert("提示", "蓝牙不可用,是否打开蓝牙!", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent();
+                                    intent.setAction(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                                    startActivity(intent);
+                                }
+                            });
                         }
-                        break;
 
+                        break;
                     default:
                         break;
                 }
@@ -349,12 +412,14 @@ public class MassagerActivity extends BaseActivity {
         tvTitle.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Log.e("", "--->     长按操作");
+                Laputa.e("", "--->     长按操作");
                 if (getBlueService() != null && getBlueService().ifAllConnected()) {
                     getBlueService().closeAll();
                 }
                 BondedDeviceUtil.save(1, "", getApplicationContext());
                 updateBleStatus(false);
+                LaputaBroadcast.sendBroadcastForStateChanged(BondedDeviceUtil.get(1, getApplicationContext()), BluetoothGatt.STATE_DISCONNECTED, getApplicationContext());
+                ToastUtil.showCustomToast(getApplicationContext(), "解除蓝牙");
                 return true;
             }
         });
@@ -362,25 +427,48 @@ public class MassagerActivity extends BaseActivity {
         ccPower.setOnTimePointChangeListener(new ColorCircleView.OnTimePointChangeListener() {
             @Override
             public void onChanging(int progress) {
+
+                isChanging = true;
                 ivStartOrStop.setVisibility(View.INVISIBLE);
             }
 
             @Override
             public void onChanged(int progress) {
+                isChanging = false;
                 ivStartOrStop.setVisibility(View.VISIBLE);
                 if (isLoading) {
-                    ToastUtil.showCustomToast(MassagerActivity.this, "正在加载...");
+                    ToastUtil.showCustomToast(MassagerActivity.this, "您点的太快了...");
                     return;
                 }
                 startLoading();
                 // TODO: 2016/9/13 切换力度 
                 if (getBlueService() != null && getBlueService().ifAllConnected()) {
-                    getBlueService().setPower(progress, currentTab);
+                    getBlueService().setPower(progress + 1, currentTab);
                 }
             }
         });
 
+   /*     ImageView fabPattern = (ImageView) findViewById(R.id.fab_pattern);
+        fabPattern.setImageResource(PatternUtil.getPatternImg(pattern));
+        fabPattern.setOnClickListener(new View.OnClickListener() {
+            private PopupWindow pop;
+
+            @Override
+            public void onClick(View v) {
+                View popView = LayoutInflater.from(getApplication()).inflate(R.layout.view_pop_pattern, null);
+                pop = new PopupWindow(popView,ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,false);
+//                pop.setAnimationStyle(R.style.LeftMenuPopAnimation);
+                pop.setTouchable(true);
+                pop.setFocusable(true);
+                pop.setBackgroundDrawable(new ShapeDrawable() );
+                pop.setOutsideTouchable(false);
+                pop.showAsDropDown(v,-Laputa.getScreenMetrics(getApplicationContext()).x+v.getWidth() , -v.getHeight());
+            }
+        });*/
+
     }
+
+
 
     private void startAnimation(View v) {
         oa = ObjectAnimator.ofFloat(v, "rotation", 0, 360f);
@@ -411,7 +499,7 @@ public class MassagerActivity extends BaseActivity {
      */
     private void doStartOrStop(MycjMassagerInfo info) {
         if (isLoading) {
-            ToastUtil.showCustomToast(this, "正在加载...");
+            ToastUtil.showCustomToast(this, "您点的太快了...");
             return;
         }
 
@@ -426,7 +514,6 @@ public class MassagerActivity extends BaseActivity {
             // load = info.getLoader()==1?true:false;
             // time = info.getLeftTime();
             // power = info.getPower();
-
 
 
             if (getBlueService() != null && getBlueService().ifAllConnected()) {
@@ -444,7 +531,7 @@ public class MassagerActivity extends BaseActivity {
                 int hr = 0;
                 info = new MycjMassagerInfo(open, pattern, power, leftTime,
                         settingTime, temperature, tempUnit, loader, hr);
-                Log.e("MassagerActivity","------------------------------------> currentTab : " + currentTab
+                Laputa.e("MassagerActivity", "------------------------------------> currentTab : " + currentTab
                 );
                 getBlueService().startMassager(info, currentTab);
             }
@@ -543,8 +630,8 @@ public class MassagerActivity extends BaseActivity {
     };
     private ProtocolBroadcastReceiver receiverData = new ProtocolBroadcastReceiver() {
         @Override
-        protected void onChangeMassagerInfo(final MycjMassagerInfo info,int witch) {
-            super.onChangeMassagerInfo(info,witch);
+        protected void onChangeMassagerInfo(final MycjMassagerInfo info, int witch) {
+            super.onChangeMassagerInfo(info, witch);
             mHandler.post(new Runnable() {
 
                 @Override
@@ -563,8 +650,10 @@ public class MassagerActivity extends BaseActivity {
                 @Override
                 public void run() {
                     // 当当前tab 和 witch 一致时,就更新loader
-                    if (witch == currentTab) {
+//                    if (witch == currentTab) {
+                    if (witch == currentTab && getCurrentMassagerInfo()!=null && getCurrentMassagerInfo().getPattern() == pattern) {
                         updateFuzai(loader == 1);
+
                     }
                 }
             });
@@ -579,7 +668,8 @@ public class MassagerActivity extends BaseActivity {
                 public void run() {
                     if (stauts == 1) {
 //                        showCustomToast("改变力度成功");
-                        if (witch == currentTab) {
+//                        if (witch == currentTab) {
+                            if (witch == currentTab && getCurrentMassagerInfo()!=null && getCurrentMassagerInfo().getPattern() == pattern) {
                             updatePower(power);
                             stopLoading();
                         }
@@ -616,7 +706,8 @@ public class MassagerActivity extends BaseActivity {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (witch == currentTab) {
+                    updateUi(getCurrentMassagerInfo());
+                    if (witch == currentTab && getCurrentMassagerInfo()!=null && getCurrentMassagerInfo().getPattern() == pattern) {
                         updateTime(time);
                     }
                 }
@@ -629,7 +720,7 @@ public class MassagerActivity extends BaseActivity {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    LogY.e(MassagerActivity.class,"_______________________________________________________________.....onConfig() ; " + count );
+                    Laputa.e(MassagerActivity.class, "_______________________________________________________________.....onConfig() ; " + count);
                     massagerSize = count;
 
                     initTab();
@@ -647,7 +738,8 @@ public class MassagerActivity extends BaseActivity {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (witch == currentTab) {
+//                    if (witch == currentTab) {
+                        if (witch == currentTab && getCurrentMassagerInfo()!=null && getCurrentMassagerInfo().getPattern() == pattern) {
                         updatePower(power);
                     }
                 }
@@ -667,7 +759,7 @@ public class MassagerActivity extends BaseActivity {
         public void onReceive(Context context, final Intent intent) {
             String action = intent.getAction();
             if (action.equals(LaputaBroadcast.ACTION_LAPUTA_DEVICE_FOUND)) {
-                Log.e("", "__________- --___------__________-");
+                Laputa.e("", "__________- --___------__________-");
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -686,14 +778,14 @@ public class MassagerActivity extends BaseActivity {
                     public void run() {
                         int state = intent.getExtras().getInt(
                                 LaputaBroadcast.EXTRA_LAPUTA_STATE);
-                        updateBleStatus(state == SimpleLaputaBlue.STATE_SERVICE_DISCOVERED);
-                        // 掉线后，清除。
-                        updateUi(null);
-                      /*  if (state == SimpleLaputaBlue.STATE_SERVICE_DISCOVERED) {
+                       if (state == SimpleLaputaBlue.STATE_SERVICE_DISCOVERED) {
                             updateBleStatus(true);
+                           ToastUtil.showCustomToast(getApplicationContext(),"连接成功!");
                         } else {
-                            updateBleStatus(false);
-                        }*/
+                           updateBleStatus(false);
+                            BaseApp.clear();
+                            updateUi(getCurrentMassagerInfo());
+                        }
                     }
 
                 });
@@ -719,8 +811,6 @@ public class MassagerActivity extends BaseActivity {
     private ImageView ivFuzai;
     private ImageView ivStartOrStop;
     private TextView tvTime;
-    //    private LinearLayout llBleStatus;
     private ImageView ivBleStatus;
-    //    private TextView tvBleStatus;
     private ObjectAnimator oa;
 }

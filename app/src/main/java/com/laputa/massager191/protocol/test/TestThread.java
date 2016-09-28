@@ -11,7 +11,7 @@ import com.laputa.massager191.protocol.core.MassagerProtocolNotifyManager;
 import com.laputa.massager191.protocol.core.ProtocolBroadcast;
 import com.laputa.massager191.protocol.notify.OnProtocolNotifyListenerBasedapter;
 import com.laputa.massager191.protocol.util.DataUtil;
-import com.laputa.massager191.util.LogY;
+import com.laputa.massager191.util.Laputa;
 
 /**
  * Created by Administrator on 2016/9/12.
@@ -40,11 +40,11 @@ public class TestThread extends Thread {
     }
 
     private void e(String msg) {
-        LogY.e(isDebug, "laputa", msg);
+        Laputa.e(  msg);
     }
 
     private void i(String msg) {
-        LogY.i(isDebug, "laputa", msg);
+        Laputa.i(  msg);
     }
 
     @Override

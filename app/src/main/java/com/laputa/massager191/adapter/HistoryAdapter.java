@@ -5,23 +5,24 @@ import java.util.Date;
 import java.util.List;
 
 
-
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.laputa.massager191.R;
 import com.laputa.massager191.bean.History;
-import com.laputa.massager191.util.DateUtil;
+import com.laputa.massager191.bean.Pattern;
+import com.laputa.massager191.util.Laputa;
+import com.laputa.massager191.util.PatternUtil;
 import com.laputa.massager191.view.PowerView;
 
 
 public class HistoryAdapter extends BaseAdapter {
+	private final Resources resources;
 	private List<History> historys = new ArrayList<History>();
 	private Context context;
 	private String VIB;
@@ -41,6 +42,7 @@ public class HistoryAdapter extends BaseAdapter {
 		EMS2 ="";
 		EMS3 = "";
 		unknown ="";
+		resources = context.getResources();
 	}
 
 	@Override
@@ -74,8 +76,8 @@ public class HistoryAdapter extends BaseAdapter {
 		
 		History history = historys.get(position);
 		String date = history.getDate();
-		Date d = DateUtil.stringToDate(date, "yyyyMMdd hh:mm:ss");
-		String text = DateUtil.dateToString(d, "hh:mm:ss");
+		Date d = Laputa.stringToDate(date, "yyyyMMdd hh:mm:ss");
+		String text = Laputa.dateToString(d, "hh:mm:ss");
 		vh.tvDate.setText(text);
 		vh.tvPower.setText(String.valueOf(history.getPower()));
 		String model = unknown;
@@ -109,7 +111,7 @@ public class HistoryAdapter extends BaseAdapter {
 		default:
 			break;
 		}
-		vh.tvModel.setText("模式："+history.getModel());
+		vh.tvModel.setText(resources.getString(PatternUtil.getPatternName(history.getModel())));
 		return convertView;
 	}
 

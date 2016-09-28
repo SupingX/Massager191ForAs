@@ -8,6 +8,7 @@ import com.laputa.massager191.protocol.bean.Result;
 import com.laputa.massager191.protocol.notify.BasicProtocolNotifyManager;
 import com.laputa.massager191.protocol.notify.OnProtocolNotifyListener;
 import com.laputa.massager191.protocol.util.DataUtil;
+import com.laputa.massager191.util.Laputa;
 
 /**
  *
@@ -79,6 +80,7 @@ public class MassagerProtocolNotifyManager extends BasicProtocolNotifyManager {
                 String data_tempUnit = result.substring(18, 20);
                 String data_load = result.substring(20, 22);
                 String data_hr = result.substring(22, 24);
+
                 int open = Integer.valueOf(data_open, 16);
                 int pattern = Integer.valueOf(data_pattern, 16);
                 int power = Integer.valueOf(data_power, 16);
@@ -111,11 +113,12 @@ public class MassagerProtocolNotifyManager extends BasicProtocolNotifyManager {
                 String desc = getDesc() + "负载:" + loader;
 
                 // 哪个按摩器.
-                String data_massager = result.substring(24, 26);
+                String data_massager = result.substring(4, 6);
                 int massager = Integer.valueOf(data_massager);
                 if (mOnProtocolNotifyListener != null) {
                     mOnProtocolNotifyListener.onParseLoader(desc, loader, massager);
                 }
+
                 if (broadcast != null) {
                     broadcast.sendBroadcastForLoader(loader,massager);
                 }

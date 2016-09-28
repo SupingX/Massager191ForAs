@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@mipmap/ic_bg_app"
     android:orientation="vertical"
     tools:context="com.laputa.massager191.activity.MassagerActivity">
@@ -89,7 +90,7 @@
                 android:button="@drawable/ic_tongbu_on"
                 android:layout_alignParentRight="true"
                 /> -->
-        <com.laputa.massager191.view.ColorCircleView
+            <com.laputa.massager191.view.ColorCircleView
             android:id="@+id/cc_massager_power"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -146,7 +147,151 @@
                 android:textColor="#fff"
                 android:textSize="14sp"/>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginBottom="12dp"
+            android:layout_above="@id/cc_massager_power"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <ImageView
+                android:padding="12dp"
+                android:src="@mipmap/ic_bg_pattern_normal"
+                android:id="@+id/tv_massager_info_red"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_tab_massager_red"
+                />
+            <ImageView
+                android:padding="12dp"
+                android:src="@mipmap/ic_bg_pattern_normal"
+                android:id="@+id/tv_massager_info_green"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_tab_massager_green"
+                />
+            <ImageView
+                android:padding="12dp"
+                android:src="@mipmap/ic_bg_pattern_normal"
+                android:id="@+id/tv_massager_info_blue"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_tab_massager_blue"
+                />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+           >
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/fab_pattern"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/ic_pattern_12"
+            android:background="@mipmap/ic_bg_pattern_normal"
+            />
+
+
+        <HorizontalScrollView
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/fab_pattern"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:gravity="center"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:src="@mipmap/ic_pattern_01"
+                    android:layout_width="40dp"
+                    android:background="@mipmap/ic_bg_pattern_normal"
+                    android:layout_height="40dp" />
+
+
+            </LinearLayout>
+        </HorizontalScrollView>
+        </RelativeLayout>
+
+
     </RelativeLayout>
+
+
 
     <FrameLayout
         android:id="@+id/fr_tab"
