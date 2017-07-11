@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ *  按摩器主页~
  */
 public class MassagerActivity extends BaseActivity {
     private DeviceDialog chooseBlueADialog;
