@@ -16,6 +16,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,6 +94,7 @@ public class MassagerActivity extends BaseActivity {
 
    private void testSourceTree(){
        
+       Log.e("tag","info!");
    }
 
 
