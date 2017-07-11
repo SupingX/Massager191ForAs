@@ -50,6 +50,9 @@ import java.util.List;
 
 /**
  *  按摩器主页~
+ *
+ *
+ *
  */
 public class MassagerActivity extends BaseActivity {
     private DeviceDialog chooseBlueADialog;
@@ -87,6 +90,12 @@ public class MassagerActivity extends BaseActivity {
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
     }*/
+
+   private void testSourceTree(){
+       
+   }
+
+
 
     private void chenjinshi() {
         if (Build.VERSION.SDK_INT >= 21) {
