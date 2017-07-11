@@ -95,6 +95,9 @@ public class MassagerActivity extends BaseActivity {
    private void testSourceTree(){
        
        Log.e("tag","info!");
+
+
+       Log.e("tag","master分支上的修改");
    }
 
 
