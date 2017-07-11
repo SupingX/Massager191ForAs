@@ -95,6 +95,11 @@ public class MassagerActivity extends BaseActivity {
    private void testSourceTree(){
        
        Log.e("tag","info!");
+
+//       Log
+
+
+       Log.e("tag"," 在分支branch_01上的修改~ master 看不到？");
    }
 
 
